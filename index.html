@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Lane Co. - Make Waves Strategy · Brisbane 2032</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0ebe0;
+  --c1:#666A86;
+  --c2:#788AA3;
+  --c3:#92B6B1;
+  --c4:#B2C9AB;
+  --c5:#D4A76A;
+  --text:#1d2030;
+  --muted:rgba(29,32,48,0.48);
+  --glass:rgba(255,255,255,0.55);
+  --gborder:rgba(146,182,177,0.22);
+  --card:rgba(255,255,255,0.7);
+}
+
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI','Inter',system-ui,sans-serif;}
+
+/* ── BACKGROUND ── */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(130px);will-change:transform;}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(146,182,177,.28),transparent 70%);top:-200px;left:-150px;animation:drift1 20s ease-in-out infinite;}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(102,106,134,.2),transparent 70%);bottom:-180px;right:-140px;animation:drift2 24s ease-in-out infinite;}
+.orb3{width:480px;height:480px;background:radial-gradient(circle,rgba(178,201,171,.22),transparent 70%);top:40%;left:45%;transform:translate(-50%,-50%);animation:drift3 28s ease-in-out infinite;}
+@keyframes drift1{0%,100%{transform:translate(0,0);}50%{transform:translate(50px,-35px);}}
+@keyframes drift2{0%,100%{transform:translate(0,0);}50%{transform:translate(-40px,35px);}}
+@keyframes drift3{0%,100%{transform:translate(-50%,-50%);}50%{transform:translate(-44%,-55%);}}
+#bgCanvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;}
+
+/* ── CHROME ── */
+#pbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--c1),var(--c3),var(--c4));z-index:400;transition:width .65s cubic-bezier(.25,1,.5,1);box-shadow:0 0 12px rgba(146,182,177,.45);}
+#counter{position:fixed;top:20px;right:28px;font-size:10px;letter-spacing:4px;color:var(--muted);z-index:400;font-weight:700;}
+#hint{position:fixed;bottom:18px;right:22px;font-size:9px;color:rgba(29,32,48,.2);z-index:400;letter-spacing:2px;text-transform:uppercase;}
+.arr{position:fixed;top:50%;transform:translateY(-50%);z-index:400;cursor:pointer;color:rgba(146,182,177,.5);font-size:2rem;line-height:1;transition:color .25s,text-shadow .25s;user-select:none;padding:18px 14px;}
+.arr:hover{color:var(--c3);text-shadow:0 0 18px rgba(146,182,177,.4);}
+#prev{left:4px;}#next{right:4px;}
+#dots{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:400;}
+.dot{width:5px;height:5px;border-radius:50%;background:transparent;border:1.5px solid rgba(146,182,177,.4);cursor:pointer;transition:all .35s;}
+.dot.on{background:var(--c3);border-color:var(--c3);box-shadow:0 0 8px rgba(146,182,177,.5);transform:scale(1.5);}
+
+/* ── DECK ── */
+#deck{position:relative;z-index:10;width:100%;height:100vh;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:52px 80px;opacity:0;pointer-events:none;transition:opacity .45s ease;}
+.slide.on{opacity:1;pointer-events:all;}
+.slide.on .a{animation:up .55s cubic-bezier(.16,1,.3,1) both;}
+.slide.on .a:nth-child(1){animation-delay:.04s;}
+.slide.on .a:nth-child(2){animation-delay:.13s;}
+.slide.on .a:nth-child(3){animation-delay:.23s;}
+.slide.on .a:nth-child(4){animation-delay:.33s;}
+.slide.on .a:nth-child(5){animation-delay:.43s;}
+@keyframes up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── TYPE ── */
+.chip{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--c3);background:rgba(146,182,177,.12);border:1px solid rgba(146,182,177,.3);border-radius:20px;padding:4px 16px;}
+h1{font-size:clamp(2.8rem,5vw,4.8rem);font-weight:900;line-height:1.02;letter-spacing:-2.5px;color:var(--text);}
+h2{font-size:clamp(1.6rem,3vw,2.7rem);font-weight:800;line-height:1.05;letter-spacing:-1.2px;color:var(--text);}
+.gt{background:linear-gradient(135deg,var(--c3) 0%,var(--c4) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gg{background:linear-gradient(135deg,var(--c1) 0%,var(--c2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gb{background:linear-gradient(135deg,var(--c2) 0%,var(--c3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sub{font-size:.82rem;color:var(--muted);line-height:1.65;text-align:center;max-width:540px;}
+
+/* ── GLASS CARD ── */
+.gc{background:var(--card);border:1px solid var(--gborder);border-radius:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.gc:hover{background:rgba(255,255,255,.88);box-shadow:0 16px 50px rgba(102,106,134,.12);}
+
+/* ── SLIDE 1 ── */
+.team{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.tcard{padding:20px 14px;border-radius:14px;text-align:center;min-width:136px;transition:transform .3s,box-shadow .3s;}
+.tcard:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(102,106,134,.14);}
+.tic{width:44px;height:44px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border-radius:12px;}
+.tn{font-size:.9rem;font-weight:800;margin-bottom:3px;color:var(--text);}
+.tr{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;line-height:1.55;}
+
+/* ── SLIDE 2 ── */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;width:100%;max-width:980px;}
+.ccard{padding:22px 22px 18px 28px;border-radius:14px;position:relative;overflow:hidden;}
+.ccard::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.ct::before{background:var(--c3);}
+.cg::before{background:var(--c5);}
+.cn::before{background:var(--c4);}
+.cp::before{background:var(--c2);}
+.cowner{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px;}
+.ot{color:var(--c3);}.og{color:var(--c5);}.on2{color:var(--c4);}.op{color:var(--c2);}
+.ccard h3{font-size:.95rem;font-weight:800;margin-bottom:7px;color:var(--text);}
+.ccard p{font-size:.73rem;color:var(--muted);line-height:1.62;margin-bottom:10px;}
+.cstat{display:inline-block;font-size:.62rem;font-weight:700;padding:3px 11px;border-radius:20px;}
+.st{background:rgba(146,182,177,.14);border:1px solid rgba(146,182,177,.3);color:#4a9490;}
+.sg{background:rgba(212,167,106,.14);border:1px solid rgba(212,167,106,.3);color:#a07830;}
+.sn{background:rgba(178,201,171,.14);border:1px solid rgba(178,201,171,.3);color:#5a8a52;}
+.sp{background:rgba(120,138,163,.14);border:1px solid rgba(120,138,163,.3);color:var(--c2);}
+/* ── CARD FLIP ── */
+.ccard-flip{position:relative;border-radius:14px;cursor:pointer;overflow:hidden;transition:box-shadow .3s;}
+.ccard-flip:hover{box-shadow:0 12px 35px rgba(102,106,134,.14);}
+.ccard-inner{width:100%;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.16,1,.3,1);}
+.ccard-flip.flipped .ccard-inner{transform:rotateY(180deg);}
+.ccard-front,.ccard-back{backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.ccard-back{transform:rotateY(180deg);position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:8px;background:var(--card);}
+.flip-hint{position:absolute;bottom:9px;right:11px;font-size:.48rem;color:rgba(29,32,48,.22);letter-spacing:1.5px;text-transform:uppercase;pointer-events:none;transition:opacity .3s;z-index:5;}
+.ccard-flip.flipped .flip-hint{opacity:0;}
+.flip-back-label{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.flip-back-label.lt{color:var(--c3);}
+.flip-back-label.lg{color:var(--c5);}
+.flip-back-label.ln{color:#5a8a52;}
+.flip-back-label.lp{color:var(--c2);}
+.ccard-back h3{font-size:.9rem;font-weight:800;margin-bottom:6px;color:var(--text);}
+.ccard-back p{font-size:.72rem;color:var(--muted);line-height:1.65;}
+
+/* ── SLIDE 3 ── */
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:980px;}
+.wcard{padding:28px;border-radius:16px;transition:transform .3s,box-shadow .3s;}
+.wcard:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(102,106,134,.12);}
+.wbadge{display:inline-flex;align-items:center;gap:6px;font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 13px;border-radius:20px;margin-bottom:13px;}
+.bd{background:rgba(102,106,134,.12);border:1px solid rgba(102,106,134,.25);color:var(--c1);}
+.bw{background:rgba(212,167,106,.12);border:1px solid rgba(212,167,106,.25);color:#9a7028;}
+.wcard h3{font-size:.98rem;font-weight:800;margin-bottom:8px;color:var(--text);}
+.wthreat{font-size:.73rem;color:var(--muted);margin-bottom:14px;line-height:1.62;}
+.wresp{padding:14px 16px;background:rgba(146,182,177,.08);border:1px solid rgba(146,182,177,.18);border-radius:10px;}
+.wrl{font-size:.58rem;font-weight:700;letter-spacing:2px;color:#4a9490;text-transform:uppercase;margin-bottom:9px;}
+.wbullet{font-size:.72rem;color:var(--muted);margin-bottom:6px;padding-left:16px;position:relative;line-height:1.56;}
+.wbullet::before{content:'→';position:absolute;left:0;color:rgba(146,182,177,.7);font-size:.65rem;top:1px;}
+.wbullet:last-child{margin-bottom:0;}
+.wn{font-weight:700;font-size:.7rem;}
+
+/* ── SLIDE 4 ── */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;width:100%;max-width:1040px;}
+.scard{padding:26px 20px;border-radius:16px;position:relative;overflow:hidden;transition:transform .4s cubic-bezier(.175,.885,.32,1.275),box-shadow .4s;}
+.scard::after{content:'';position:absolute;inset:0;border-radius:16px;opacity:0;transition:opacity .4s;pointer-events:none;}
+.scard:hover{transform:translateY(-8px) scale(1.015);}
+.scard:hover::after{opacity:1;}
+.sc1{border-color:rgba(146,182,177,.25);}
+.sc1:hover{box-shadow:0 24px 60px rgba(146,182,177,.18);border-color:rgba(146,182,177,.55);}
+.sc1::after{background:radial-gradient(circle at 50% 0%,rgba(146,182,177,.08),transparent 70%);}
+.sc2{border-color:rgba(178,201,171,.25);}
+.sc2:hover{box-shadow:0 24px 60px rgba(178,201,171,.18);border-color:rgba(178,201,171,.55);}
+.sc2::after{background:radial-gradient(circle at 50% 0%,rgba(178,201,171,.08),transparent 70%);}
+.sc3{border-color:rgba(120,138,163,.25);}
+.sc3:hover{box-shadow:0 24px 60px rgba(120,138,163,.18);border-color:rgba(120,138,163,.55);}
+.sc3::after{background:radial-gradient(circle at 50% 0%,rgba(120,138,163,.08),transparent 70%);}
+.sicon{font-size:2rem;display:block;margin-bottom:12px;}
+.stag{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.sname{font-size:1rem;font-weight:800;margin-bottom:12px;color:var(--text);}
+.sbullet{font-size:.7rem;color:var(--muted);margin-bottom:6px;padding-left:14px;position:relative;line-height:1.56;}
+.sbullet::before{content:'·';position:absolute;left:3px;font-size:1.1rem;line-height:1.1;color:var(--muted);}
+.skpi{display:inline-block;margin-top:12px;font-size:.62rem;font-weight:700;padding:4px 12px;border-radius:20px;}
+.kt{background:rgba(146,182,177,.14);border:1px solid rgba(146,182,177,.28);color:#4a9490;}
+.kn{background:rgba(178,201,171,.14);border:1px solid rgba(178,201,171,.28);color:#5a8a52;}
+.ks{background:rgba(120,138,163,.14);border:1px solid rgba(120,138,163,.28);color:var(--c2);}
+
+/* ── SLIDE 5 ── */
+.tl{display:flex;justify-content:space-between;position:relative;padding-top:20px;margin-bottom:26px;}
+.tl::before{content:'';position:absolute;top:42px;left:70px;right:70px;height:1px;background:linear-gradient(90deg,var(--c1),var(--c3),var(--c4));}
+.tlnode{display:flex;flex-direction:column;align-items:center;flex:1;z-index:1;}
+
+/* wave circle node */
+.tldot{position:relative;width:58px;height:58px;border-radius:50%;border:2px solid;overflow:hidden;margin-bottom:10px;display:flex;align-items:center;justify-content:center;background:white;transition:transform .3s,box-shadow .3s;}
+.tlnode:hover .tldot{transform:scale(1.12);}
+.d1{border-color:var(--c3);box-shadow:0 0 12px rgba(146,182,177,.25);}
+.d2{border-color:var(--c4);box-shadow:0 0 12px rgba(178,201,171,.25);}
+.d3{border-color:var(--c5);box-shadow:0 0 12px rgba(212,167,106,.25);}
+.d4{border-color:var(--c1);box-shadow:0 0 16px rgba(102,106,134,.35);}
+
+/* animated wave inside circle */
+.wave-anim{position:absolute;bottom:0;left:0;width:200%;animation:wavescroll linear infinite;}
+@keyframes wavescroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* phase label on top of wave */
+.phase{position:relative;z-index:2;font-size:.44rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;text-align:center;line-height:1.2;}
+.d1 .phase{color:#3a7470;}
+.d2 .phase{color:#4a7a42;}
+.d3 .phase{color:#8a6820;}
+.d4 .phase{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.2);}
+
+.tlyear{font-size:.63rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.y1{color:var(--c3);}.y2{color:#5a8a52;}.y3{color:#9a7028;}.y4{color:var(--c1);}
+.tlbox{font-size:.62rem;color:var(--muted);text-align:center;line-height:1.62;width:128px;}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;}
+.kbox{padding:18px 10px;border-radius:13px;text-align:center;}
+.knum{font-size:2.4rem;font-weight:900;line-height:1;margin-bottom:5px;}
+.klabel{font-size:.6rem;color:var(--muted);line-height:1.45;text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── SLIDE 6 ── */
+.s6{text-align:center;max-width:760px;}
+.qblock{background:rgba(146,182,177,.09);border-left:3px solid var(--c3);border-radius:0 13px 13px 0;padding:16px 22px;margin:14px 0;text-align:left;}
+.qblock p{font-size:.88rem;font-style:italic;color:var(--text);line-height:1.82;}
+.qsrc{font-size:.64rem;color:#4a9490;margin-top:5px;}
+.pbadges{display:flex;gap:9px;justify-content:center;margin:12px 0;flex-wrap:wrap;}
+.pb{padding:6px 16px;border-radius:30px;font-size:.7rem;font-weight:700;}
+.pb1{background:rgba(146,182,177,.14);border:1px solid rgba(146,182,177,.3);color:#4a9490;}
+.pb2{background:rgba(178,201,171,.14);border:1px solid rgba(178,201,171,.3);color:#5a8a52;}
+.pb3{background:rgba(120,138,163,.14);border:1px solid rgba(120,138,163,.3);color:var(--c2);}
+.s6body{font-size:.78rem;color:var(--muted);line-height:1.92;margin-bottom:14px;}
+.fcta{font-size:1.4rem;font-weight:900;letter-spacing:-.5px;}
+.credits{font-size:.62rem;margin-top:8px;color:rgba(29,32,48,.22);}
+
+.tilt{transform-style:preserve-3d;}
+</style>
+</head>
+<body>
+
+<div id="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<canvas id="bgCanvas"></canvas>
+
+<div id="pbar" style="width:16.67%"></div>
+<div id="counter">01 / 06</div>
+<div class="arr" id="prev" onclick="go(-1)">‹</div>
+<div class="arr" id="next" onclick="go(1)">›</div>
+<div id="dots"></div>
+<div id="hint">← → ARROW KEYS</div>
+
+<div id="deck">
+
+<!-- ═══ SLIDE 1 · INTRO ═══ -->
+<div class="slide on" id="s0">
+  <div class="a" style="text-align:center;">
+    <span class="chip">2309THS · Griffith University · A2 Presentation · 2026</span>
+  </div>
+  <div class="a" style="text-align:center;margin:14px 0 6px;">
+    <div style="font-size:.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">🏖 &nbsp;Blue Lane Co. &nbsp;·&nbsp; presents</div>
+    <h1><span class="gt">Make Waves</span></h1>
+    <div style="font-size:clamp(.9rem,1.8vw,1.45rem);font-weight:400;color:var(--muted);letter-spacing:-0.3px;margin-top:6px;">Paddle Forward 32 - Make Waves Strategy</div>
+  </div>
+  <p class="sub a" style="margin:6px auto 26px;">A go-to-market consultancy strategy commissioned to grow grassroots participation in Paddle Australia ahead of the Brisbane 2032 Olympics</p>
+  <div class="team a">
+    <!-- Aliesha - Kayak paddle (sport development) -->
+    <div class="tcard gc tilt" style="border-color:rgba(146,182,177,.3);">
+      <div class="tic" style="background:rgba(146,182,177,.12);">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#92B6B1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <path d="M4 12C3.5 10 2 10 2 12C2 14 3.5 14 4 12Z"/>
+          <path d="M20 12C20.5 10 22 10 22 12C22 14 20.5 14 20 12Z"/>
+          <line x1="12" y1="9" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <div class="tn">Aliesha</div>
+      <div class="tr" style="color:var(--c3);">Sport Development Coordinator</div>
+    </div>
+    <!-- Hailey - Wave (engagement) -->
+    <div class="tcard gc tilt" style="border-color:rgba(120,138,163,.3);">
+      <div class="tic" style="background:rgba(120,138,163,.12);">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#788AA3" stroke-width="1.6" stroke-linecap="round">
+          <path d="M2 8Q5.5 4 9 8Q12.5 12 16 8Q19.5 4 22 8"/>
+          <path d="M2 13Q5.5 9 9 13Q12.5 17 16 13Q19.5 9 22 13"/>
+          <path d="M2 18Q5.5 14 9 18Q12.5 22 16 18Q19.5 14 22 18"/>
+        </svg>
+      </div>
+      <div class="tn">Hailey</div>
+      <div class="tr" style="color:var(--c2);">Engagement & Partnerships Manager</div>
+    </div>
+    <!-- Raymond - Megaphone (marketing) -->
+    <div class="tcard gc tilt" style="border-color:rgba(178,201,171,.3);">
+      <div class="tic" style="background:rgba(178,201,171,.12);">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#B2C9AB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5v3h3.5L13 17V7L6.5 10.5H3Z"/>
+          <path d="M16.5 8.5C17.5 9.5 18 10.7 18 12C18 13.3 17.5 14.5 16.5 15.5"/>
+          <path d="M19 6.5C20.5 8 21.5 9.9 21.5 12C21.5 14.1 20.5 16 19 17.5"/>
+        </svg>
+      </div>
+      <div class="tn">Raymond</div>
+      <div class="tr" style="color:#5a8a52;">Marketing & Consumer Manager</div>
+    </div>
+    <!-- Edward - Partnership network (commercial) -->
+    <div class="tcard gc tilt" style="border-color:rgba(212,167,106,.3);">
+      <div class="tic" style="background:rgba(212,167,106,.12);">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#D4A76A" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="6" cy="12" r="2.5"/>
+          <circle cx="18" cy="7" r="2.5"/>
+          <circle cx="18" cy="17" r="2.5"/>
+          <line x1="8.2" y1="11" x2="15.8" y2="8"/>
+          <line x1="8.2" y1="13" x2="15.8" y2="16"/>
+        </svg>
+      </div>
+      <div class="tn">Edward</div>
+      <div class="tr" style="color:var(--c5);">Commercial Partnerships Manager</div>
+    </div>
+    <!-- Kristen - Calendar (events) -->
+    <div class="tcard gc tilt" style="border-color:rgba(102,106,134,.3);">
+      <div class="tic" style="background:rgba(102,106,134,.12);">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#666A86" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="17" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <circle cx="12" cy="15" r="1.2" fill="#666A86" stroke="none"/>
+        </svg>
+      </div>
+      <div class="tn">Kristen</div>
+      <div class="tr" style="color:var(--c1);">Events Coordinator</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 2 · THE CHALLENGE ═══ -->
+<div class="slide" id="s1">
+  <div style="text-align:center;margin-bottom:18px;">
+    <span class="chip ch-anim" style="opacity:0;">02 - The Challenge</span>
+    <h2 class="ch-anim" style="margin-top:10px;opacity:0;">Four Dimensions of <span class="gt">One Crisis</span></h2>
+    <p id="ch-sub" style="font-size:.82rem;color:var(--muted);margin-top:8px;min-height:1.2em;"></p>
+  </div>
+  <div class="cgrid">
+
+    <!-- Card 1: Infrastructure Myth -->
+    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="ccard-inner">
+        <div class="ccard ccard-front ct">
+          <div class="cowner ot">Aliesha - Sport Development</div>
+          <h3>🏟️ &nbsp;The Infrastructure Myth</h3>
+          <p>The romanticised perception of the Olympics can often be a lie. Brisbane 2032 builds a Whitewater facility for elite paddlers - local clubs and schools receive zero tangible support in return.</p>
+          <span class="cstat st ch-stat">Horne (2021): Legacy is selective, not universal</span>
+        </div>
+        <div class="ccard ccard-back ct">
+          <div class="flip-back-label lt">💡 Blue Lane Co. Fix</div>
+          <h3>We don't wait for trickle-down legacy</h3>
+          <p>Our Come & Try Gold Coast strategy puts community activation first - before any infrastructure is built. We channel Olympic momentum into schools and clubs directly, not through government promises.</p>
+        </div>
+      </div>
+      <span class="flip-hint">tap to flip ↩</span>
+    </div>
+
+    <!-- Card 2: No Community Activation -->
+    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="ccard-inner">
+        <div class="ccard ccard-front cg">
+          <div class="cowner og">Edward - Commercial Partnerships</div>
+          <h3>📍 &nbsp;No Community Activation</h3>
+          <p>Georges River Come & Try: 8 sessions sold out before a single paddler hit the water. The Gold Coast - our home ground ahead of 2032 - has zero equivalent activation event.</p>
+          <span class="cstat sg ch-stat">8/8 sessions fully booked - demand is proven</span>
+        </div>
+        <div class="ccard ccard-back cg">
+          <div class="flip-back-label lg">💡 Blue Lane Co. Fix</div>
+          <h3>We replicate success on home ground</h3>
+          <p>Edward pitches the Gold Coast Come & Try event to 3 non-endemic sponsors. The demand is proven - we just need to build it here. Our AIS / AOT partnership brings athlete headliners like Jess Fox to drive registrations.</p>
+        </div>
+      </div>
+      <span class="flip-hint">tap to flip ↩</span>
+    </div>
+
+    <!-- Card 3: Teenage Girls Walking Away -->
+    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="ccard-inner">
+        <div class="ccard ccard-front cn">
+          <div class="cowner on2">Hailey - Engagement & Partnerships</div>
+          <h3>💪 &nbsp;Teenage Girls Walking Away</h3>
+          <p>The industry still faces huge drop-out rates among teenage girls transitioning into senior sport. The pipeline leaks before they ever reach club level - and it's getting worse.</p>
+          <span class="cstat sn ch-stat">Sport & Rec Victoria: crisis-level dropout rates</span>
+        </div>
+        <div class="ccard ccard-back cn">
+          <div class="flip-back-label ln">💡 Blue Lane Co. Fix</div>
+          <h3>HerPaddle closes the dropout cliff</h3>
+          <p>Female-only coaching environments, 50 accredited coaches, zero competition pressure - a social-first model proven to retain teenage girls. Funded through CSR partnerships with female-aligned wellness brands. Target: +30% retention in 2 years.</p>
+        </div>
+      </div>
+      <span class="flip-hint">tap to flip ↩</span>
+    </div>
+
+    <!-- Card 4: Digital Blind Spot -->
+    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="ccard-inner">
+        <div class="ccard ccard-front cp">
+          <div class="cowner op">Raymond - Marketing & Consumer</div>
+          <h3>📵 &nbsp;Digital Blind Spot</h3>
+          <p>Search "cinematic paddle reels" on YouTube or Instagram - nothing comes up. In today's society, this is the content we consume and breathe. Paddle Australia is invisible to the next generation.</p>
+          <span class="cstat sp">Zero cinematic paddle content online</span>
+        </div>
+        <div class="ccard ccard-back cp">
+          <div class="flip-back-label lp">💡 Blue Lane Co. Fix</div>
+          <h3>We own the content gap no one else sees</h3>
+          <p>Cinematic short-form reels - music-driven, emotion-first, real paddler stories. Raymond pitches a media company partnership to fund high-end production. TikTok & Instagram-first. Target: 500K organic views within 6 months.</p>
+        </div>
+      </div>
+      <span class="flip-hint">tap to flip ↩</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SLIDE 3 · WILD CARDS ═══ -->
+<div class="slide" id="s2">
+  <div class="a" style="text-align:center;margin-bottom:22px;width:100%;">
+    <span class="chip">03 - Wild Cards</span>
+    <h2 style="margin-top:10px;">Real-World Disruptions - <span class="gg">How We Adapted</span></h2>
+  </div>
+  <div class="wgrid a">
+    <div class="wcard gc tilt">
+      <div class="wbadge bd">⚠ Wild Card 04 · Competing Interest</div>
+      <h3>Rowing Australia Moves Into Our Territory</h3>
+      <p class="wthreat">Rowing launched a fan engagement initiative on the Gold Coast & Redlands - pulling participation, sponsorship attention, and Gen Z interest directly away from Paddle at the worst possible time.</p>
+      <div class="wresp">
+        <div class="wrl">✅ How We Responded</div>
+        <div class="wbullet"><span class="wn" style="color:var(--c2);">Hailey & Aliesha</span> - Accelerated HerPaddle targeting teenage girls, a demographic Rowing simply cannot compete in</div>
+        <div class="wbullet"><span class="wn" style="color:#5a8a52;">Raymond</span> - Pivoted to cinematic short-form content on TikTok & Instagram to out-engage Rowing's traditional outreach</div>
+      </div>
+    </div>
+    <div class="wcard gc tilt">
+      <div class="wbadge bw">⚡ Wild Card 06 · School Defection Risk</div>
+      <h3>Our School Pipeline Was Under Threat</h3>
+      <p class="wthreat">A private organisation approached partner high schools with a competing offer - threatening the entire youth pipeline and school-based programs before 2032.</p>
+      <div class="wresp">
+        <div class="wrl">✅ How We Responded</div>
+        <div class="wbullet"><span class="wn" style="color:var(--c3);">Aliesha</span> - Embedded Indigenous cultural curriculum (Paddle Nations Cup) into schools - something no competitor can copy or replace</div>
+        <div class="wbullet"><span class="wn" style="color:var(--c5);">Edward & Kristen</span> - Locked in school relationships by bringing Olympic athletes like Jess Fox via AIS / AOT partnership</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 4 · SOLUTION ═══ -->
+<div class="slide" id="s3">
+  <div class="a" style="text-align:center;margin-bottom:16px;">
+    <span class="chip">04 - Our Strategy</span>
+    <h2 style="margin-top:10px;">Three Pillars - <span class="gt">One Vision</span></h2>
+  </div>
+  <div class="sgrid a">
+
+    <div class="scard gc sc1 tilt">
+      <span class="sicon">🏫</span>
+      <div class="stag" style="color:var(--c3);">Pillar 1 · Edward & Kristen</div>
+      <div class="sname" style="color:#4a9490;">Paddle Nations Cup & Come & Try</div>
+      <div class="sbullet"><strong style="color:var(--text);">Edward</strong> - pitches Come & Try Gold Coast events to sponsors, secures 3 non-endemic brand deals, and manages the AIS / Australian Olympic Team partnership to bring athletes like Jess Fox</div>
+      <div class="sbullet"><strong style="color:var(--text);">Kristen</strong> - coordinates all event logistics, promotes the Paddle Nations Cup in schools, and recruits trained paddle volunteers for Culture Day activations</div>
+      <div class="sbullet">Students paddle to represent First Nations countries like Yugambeh or Turrbal - cultural curriculum no private org can replicate</div>
+      <span class="skpi kt">20 schools · 2 yrs · 3 non-endemic sponsors</span>
+    </div>
+
+    <div class="scard gc sc2 tilt">
+      <span class="sicon">💪</span>
+      <div class="stag" style="color:#5a8a52;">Pillar 2 · Hailey & Aliesha</div>
+      <div class="sname" style="color:#5a8a52;">HerPaddle - Women's Program</div>
+      <div class="sbullet"><strong style="color:var(--text);">Hailey</strong> - pitches HerPaddle to female-aligned health, wellness and activewear brands for CSR-backed funding; positions Paddle Australia as a gender-equal, athlete-first organisation</div>
+      <div class="sbullet"><strong style="color:var(--text);">Aliesha</strong> - designs and implements the program using her sport development expertise: pressure-free environments, female-only coaching, health clinics focused on female athletic development and hormone health</div>
+      <div class="sbullet">Bypasses strict competition - social, community-first approach proven to retain teen girls</div>
+      <span class="skpi kn">50 accredited coaches · +30% female retention · 2 yrs</span>
+    </div>
+
+    <div class="scard gc sc3 tilt">
+      <span class="sicon">🎬</span>
+      <div class="stag" style="color:var(--c2);">Pillar 3 · Raymond</div>
+      <div class="sname" style="color:var(--c2);">Cinematic Digital Storytelling</div>
+      <div class="sbullet">Traditional marketing fails to capture the raw emotion of sport - "cinematic paddle reels" don't exist online at all</div>
+      <div class="sbullet">Pitches a digital storytelling strategy to a film or media company to fund high-end, cinematic sports reels</div>
+      <div class="sbullet">Emotionally-evoking content - relatable voiceovers, music-driven pacing, unique colour-grading of real paddler journeys</div>
+      <div class="sbullet">Positions Paddle as a modern wellness community, not just a sport - TikTok & Instagram-first</div>
+      <span class="skpi ks">500K organic views · 5% engagement rate · 6 months</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ SLIDE 5 · STRATEGIC PLAN ═══ -->
+<div class="slide" id="s4">
+  <div class="a" style="text-align:center;margin-bottom:18px;width:100%;">
+    <span class="chip">05 - Strategic Plan</span>
+    <h2 style="margin-top:10px;">Implementation <span class="gg">2026 → 2032</span></h2>
+  </div>
+  <div style="width:100%;max-width:940px;">
+    <div class="tl a">
+      <div class="tlnode">
+        <div class="tldot d1">
+          <!-- SEED: 25% fill, slowest wave -->
+          <svg class="wave-anim" viewBox="0 0 200 58" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="animation-duration:6s;height:58px;">
+            <path d="M0,43.5 Q25,38 50,43.5 Q75,49 100,43.5 Q125,38 150,43.5 Q175,49 200,43.5 L200,58 L0,58 Z" fill="rgba(146,182,177,0.45)"/>
+          </svg>
+          <span class="phase">SEED</span>
+        </div>
+        <div class="tlyear y1">2026</div>
+        <div class="tlbox">Paddle Nations Cup launch - 5 schools, growing to 20 - Come & Try Gold Coast - 3 sponsors secured - HerPaddle pilot - Social strategy live</div>
+      </div>
+      <div class="tlnode">
+        <div class="tldot d2">
+          <!-- GROW: 45% fill -->
+          <svg class="wave-anim" viewBox="0 0 200 58" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="animation-duration:4.5s;height:58px;">
+            <path d="M0,32 Q25,26.5 50,32 Q75,37.5 100,32 Q125,26.5 150,32 Q175,37.5 200,32 L200,58 L0,58 Z" fill="rgba(178,201,171,0.5)"/>
+          </svg>
+          <span class="phase">GROW</span>
+        </div>
+        <div class="tlyear y2">2027</div>
+        <div class="tlbox">HerPaddle scales - 50 female coaches trained - Retention KPI tracking begins - Nations Cup Year 2</div>
+      </div>
+      <div class="tlnode">
+        <div class="tldot d3">
+          <!-- SCALE: 65% fill -->
+          <svg class="wave-anim" viewBox="0 0 200 58" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="animation-duration:3s;height:58px;">
+            <path d="M0,20 Q25,14.5 50,20 Q75,25.5 100,20 Q125,14.5 150,20 Q175,25.5 200,20 L200,58 L0,58 Z" fill="rgba(212,167,106,0.42)"/>
+          </svg>
+          <span class="phase">SCALE</span>
+        </div>
+        <div class="tlyear y3">2028-30</div>
+        <div class="tlbox">20 schools - 500K views hit - Jess Fox events statewide - Quarterly Social Impact Reports to sponsors</div>
+      </div>
+      <div class="tlnode">
+        <div class="tldot d4">
+          <!-- PEAK: 85% fill, fastest wave -->
+          <svg class="wave-anim" viewBox="0 0 200 58" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="animation-duration:2s;height:58px;">
+            <path d="M0,9 Q25,3.5 50,9 Q75,14.5 100,9 Q125,3.5 150,9 Q175,14.5 200,9 L200,58 L0,58 Z" fill="rgba(102,106,134,0.48)"/>
+          </svg>
+          <span class="phase">PEAK</span>
+        </div>
+        <div class="tlyear y4">2031-32</div>
+        <div class="tlbox">Full Brisbane 2032 activation - All KPIs met - Paddle Australia leads Australian community sport</div>
+      </div>
+    </div>
+    <div class="kgrid a">
+      <div class="kbox gc">
+        <div class="knum gt" data-target="20">0</div>
+        <div class="klabel">Schools · Paddle Nations Cup · 2028</div>
+      </div>
+      <div class="kbox gc">
+        <div class="knum" style="background:linear-gradient(135deg,#5a8a52,var(--c4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" data-target="30" data-prefix="+" data-suffix="%">0</div>
+        <div class="klabel">Teen Female Retention · 2 Years</div>
+      </div>
+      <div class="kbox gc">
+        <div class="knum gb" data-target="500" data-suffix="K">0</div>
+        <div class="klabel">Organic Social Views · 6 Months</div>
+      </div>
+      <div class="kbox gc">
+        <div class="knum gg" data-target="50">0</div>
+        <div class="klabel">Female Coaches Trained · 2027</div>
+      </div>
+    </div>
+    <p style="font-size:.6rem;margin-top:11px;color:var(--muted);text-align:center;">
+      Funding: Non-endemic brand sponsors · ASC Green & Gold Decade grants · QLD "Games On!" · AIS / AOT partnership · CSR / ESG corporate funding
+    </p>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 6 · CONCLUSION ═══ -->
+<div class="slide" id="s5">
+  <div class="s6">
+    <div class="a">
+      <span class="chip">06 - Conclusion</span>
+      <h2 style="margin:12px 0 0;">The Wave is <span class="gt">Already Building</span></h2>
+    </div>
+    <div class="pbadges a">
+      <span class="pb pb1">🏫 Paddle Nations Cup & Come & Try</span>
+      <span class="pb pb2">💪 HerPaddle Women's Program</span>
+      <span class="pb pb3">🎬 Cinematic Digital Storytelling</span>
+    </div>
+    <div class="qblock a">
+      <p>"Sport will provide a sense of common purpose, identity and belonging to Australians from many different backgrounds, genders and abilities."</p>
+      <div class="qsrc">- Australian Sports Commission & CSIRO, 2022b, p.7</div>
+    </div>
+    <p class="s6body a">Brisbane 2032 won't automatically benefit grassroots sport - we have to build it ourselves. Blue Lane Co. isn't just pitching participation numbers. We're selling community impact - a purpose and a value. From school Culture Days to women's health clinics to cinematic storytelling, this is how Paddle Australia becomes the next generation's sport.</p>
+    <div class="fcta gt a">Paddle Forward 32 - Make Waves Strategy 🌊</div>
+    <p class="credits a">Aliesha · Edward · Raymond · Hailey · Kristen &nbsp;·&nbsp; Blue Lane Co. &nbsp;·&nbsp; 2309THS Griffith University · 2026</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ── PARTICLES ── */
+const cv=document.getElementById('bgCanvas');
+const cx=cv.getContext('2d');
+let W,H,pts=[];
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+rsz();addEventListener('resize',rsz);
+class Pt{
+  constructor(){this.init();}
+  init(){
+    this.x=Math.random()*W;this.y=Math.random()*H;
+    this.r=Math.random()*1.4+.25;
+    this.a=Math.random()*.35+.06;
+    this.dx=(Math.random()-.5)*.25;
+    this.dy=-(Math.random()*.28+.05);
+    const c=Math.random();
+    this.col=c>.65?'146,182,177':c>.35?'178,201,171':'102,106,134';
+  }
+  step(){this.x+=this.dx;this.y+=this.dy;this.a-=.00022;if(this.y<-8||this.a<=0)this.init();}
+  draw(){cx.beginPath();cx.arc(this.x,this.y,this.r,0,Math.PI*2);cx.fillStyle=`rgba(${this.col},${this.a})`;cx.fill();}
+}
+for(let i=0;i<80;i++)pts.push(new Pt());
+function animPts(){cx.clearRect(0,0,W,H);pts.forEach(p=>{p.step();p.draw();});requestAnimationFrame(animPts);}
+animPts();
+
+/* ── 3D TILT ── */
+function applyTilt(){
+  document.querySelectorAll('.tilt').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      const rx=((e.clientY-r.top)/r.height-.5)*-8;
+      const ry=((e.clientX-r.left)/r.width-.5)*8;
+      el.style.transform=`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`;
+    });
+    el.addEventListener('mouseleave',()=>el.style.transform='');
+  });
+}
+applyTilt();
+
+/* ── NUMBER COUNTERS ── */
+function runCounters(){
+  document.querySelectorAll('[data-target]').forEach(el=>{
+    const target=+el.dataset.target;
+    const prefix=el.dataset.prefix||'';
+    const suffix=el.dataset.suffix||'';
+    let start=null;const dur=1100;
+    function step(ts){
+      if(!start)start=ts;
+      const p=Math.min((ts-start)/dur,1);
+      const e=1-Math.pow(1-p,3);
+      el.textContent=prefix+Math.round(e*target)+suffix;
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+/* ── CHALLENGE SLIDE ANIMATIONS ── */
+function runChallengeAnims(){
+  // 1. fade in chip + heading
+  document.querySelectorAll('.ch-anim').forEach((el,i)=>{
+    setTimeout(()=>{el.style.transition='opacity .5s ease, transform .5s ease';el.style.opacity='1';el.style.transform='translateY(0)';},i*150);
+  });
+
+  // 2. typewriter on subheading
+  const sub=document.getElementById('ch-sub');
+  const text='Paddle Australia is losing its next generation before Brisbane 2032 even arrives';
+  sub.textContent='';
+  let i=0;
+  const tw=setInterval(()=>{
+    sub.textContent+=text[i];
+    i++;
+    if(i>=text.length)clearInterval(tw);
+  },28);
+
+  // 3. stagger cards in
+  document.querySelectorAll('.ch-card').forEach((card,i)=>{
+    setTimeout(()=>{
+      card.style.transition='opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1)';
+      card.style.opacity='1';
+      card.style.transform='translateY(0)';
+    },500+(i*160));
+  });
+
+  // 4. pulse stat badges
+  setTimeout(()=>{
+    document.querySelectorAll('.ch-stat').forEach((el,i)=>{
+      setTimeout(()=>{
+        el.style.transition='box-shadow .3s ease, transform .3s ease';
+        el.style.transform='scale(1.06)';
+        el.style.boxShadow='0 0 12px rgba(146,182,177,.35)';
+        setTimeout(()=>{el.style.transform='scale(1)';el.style.boxShadow='none';},350);
+      },i*120);
+    });
+  },1600);
+}
+
+function resetChallengeAnims(){
+  document.querySelectorAll('.ch-anim').forEach(el=>{el.style.opacity='0';});
+  document.querySelectorAll('.ch-card').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.classList.remove('flipped');});
+  const sub=document.getElementById('ch-sub');
+  if(sub)sub.textContent='';
+}
+
+/* ── CARD FLIP ── */
+document.querySelectorAll('.ccard-flip').forEach(card=>{
+  card.addEventListener('click',()=>card.classList.toggle('flipped'));
+});
+
+/* ── NAVIGATION ── */
+let cur=0;
+const slides=document.querySelectorAll('.slide');
+const N=slides.length;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<N;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' on':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+}
+function goTo(n){
+  if(n<0||n>=N||n===cur)return;
+  slides[cur].classList.remove('on');
+  cur=n;
+  const sl=slides[cur];
+  sl.classList.add('on');
+  sl.querySelectorAll('.a').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  document.getElementById('pbar').style.width=`${((cur+1)/N)*100}%`;
+  document.getElementById('counter').textContent=`${String(cur+1).padStart(2,'0')} / ${String(N).padStart(2,'0')}`;
+  document.querySelectorAll('.tilt').forEach(el=>el.style.transform='');
+  if(cur===1)setTimeout(runChallengeAnims,100);
+  else resetChallengeAnims();
+  if(cur===4)setTimeout(runCounters,500);
+}
+function go(dir){goTo(cur+dir);}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();go(1);}
+  if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();go(-1);}
+});
+let tx0=0;
+document.addEventListener('touchstart',e=>tx0=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{const d=tx0-e.changedTouches[0].clientX;if(Math.abs(d)>50)go(d>0?1:-1);});
+</script>
+</body>
+</html>
