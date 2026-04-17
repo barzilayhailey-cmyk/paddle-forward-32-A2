@@ -94,22 +94,6 @@ h2{font-size:clamp(1.6rem,3vw,2.7rem);font-weight:800;line-height:1.05;letter-sp
 .sg{background:rgba(212,167,106,.14);border:1px solid rgba(212,167,106,.3);color:#a07830;}
 .sn{background:rgba(178,201,171,.14);border:1px solid rgba(178,201,171,.3);color:#5a8a52;}
 .sp{background:rgba(120,138,163,.14);border:1px solid rgba(120,138,163,.3);color:var(--c2);}
-/* ── CARD FLIP ── */
-.ccard-flip{position:relative;border-radius:14px;cursor:pointer;overflow:hidden;transition:box-shadow .3s;}
-.ccard-flip:hover{box-shadow:0 12px 35px rgba(102,106,134,.14);}
-.ccard-inner{width:100%;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.16,1,.3,1);}
-.ccard-flip.flipped .ccard-inner{transform:rotateY(180deg);}
-.ccard-front,.ccard-back{backface-visibility:hidden;-webkit-backface-visibility:hidden;}
-.ccard-back{transform:rotateY(180deg);position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:8px;background:var(--card);}
-.flip-hint{position:absolute;bottom:9px;right:11px;font-size:.48rem;color:rgba(29,32,48,.22);letter-spacing:1.5px;text-transform:uppercase;pointer-events:none;transition:opacity .3s;z-index:5;}
-.ccard-flip.flipped .flip-hint{opacity:0;}
-.flip-back-label{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
-.flip-back-label.lt{color:var(--c3);}
-.flip-back-label.lg{color:var(--c5);}
-.flip-back-label.ln{color:#5a8a52;}
-.flip-back-label.lp{color:var(--c2);}
-.ccard-back h3{font-size:.9rem;font-weight:800;margin-bottom:6px;color:var(--text);}
-.ccard-back p{font-size:.72rem;color:var(--muted);line-height:1.65;}
 
 /* ── SLIDE 3 ── */
 .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:980px;}
@@ -308,76 +292,32 @@ h2{font-size:clamp(1.6rem,3vw,2.7rem);font-weight:800;line-height:1.05;letter-sp
   </div>
   <div class="cgrid">
 
-    <!-- Card 1: Infrastructure Myth -->
-    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
-      <div class="ccard-inner">
-        <div class="ccard ccard-front ct">
-          <div class="cowner ot">Aliesha - Sport Development</div>
-          <h3>🏟️ &nbsp;The Infrastructure Myth</h3>
-          <p>The romanticised perception of the Olympics can often be a lie. Brisbane 2032 builds a Whitewater facility for elite paddlers - local clubs and schools receive zero tangible support in return.</p>
-          <span class="cstat st ch-stat">Horne (2021): Legacy is selective, not universal</span>
-        </div>
-        <div class="ccard ccard-back ct">
-          <div class="flip-back-label lt">💡 Blue Lane Co. Fix</div>
-          <h3>We don't wait for trickle-down legacy</h3>
-          <p>Our Come & Try Gold Coast strategy puts community activation first - before any infrastructure is built. We channel Olympic momentum into schools and clubs directly, not through government promises.</p>
-        </div>
-      </div>
-      <span class="flip-hint">tap to flip ↩</span>
+    <div class="ccard gc ct tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="cowner ot">Aliesha - Sport Development</div>
+      <h3>🏟️ &nbsp;The Infrastructure Myth</h3>
+      <p>The romanticised perception of the Olympics can often be a lie. Brisbane 2032 builds a Whitewater facility for elite paddlers - local clubs and schools receive zero tangible support in return.</p>
+      <span class="cstat st ch-stat">Horne (2021): Legacy is selective, not universal</span>
     </div>
 
-    <!-- Card 2: No Community Activation -->
-    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
-      <div class="ccard-inner">
-        <div class="ccard ccard-front cg">
-          <div class="cowner og">Edward - Commercial Partnerships</div>
-          <h3>📍 &nbsp;No Community Activation</h3>
-          <p>Georges River Come & Try: 8 sessions sold out before a single paddler hit the water. The Gold Coast - our home ground ahead of 2032 - has zero equivalent activation event.</p>
-          <span class="cstat sg ch-stat">8/8 sessions fully booked - demand is proven</span>
-        </div>
-        <div class="ccard ccard-back cg">
-          <div class="flip-back-label lg">💡 Blue Lane Co. Fix</div>
-          <h3>We replicate success on home ground</h3>
-          <p>Edward pitches the Gold Coast Come & Try event to 3 non-endemic sponsors. The demand is proven - we just need to build it here. Our AIS / AOT partnership brings athlete headliners like Jess Fox to drive registrations.</p>
-        </div>
-      </div>
-      <span class="flip-hint">tap to flip ↩</span>
+    <div class="ccard gc cg tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="cowner og">Edward - Commercial Partnerships</div>
+      <h3>📍 &nbsp;No Community Activation</h3>
+      <p>Georges River Come & Try: 8 sessions sold out before a single paddler hit the water. The Gold Coast - our home ground ahead of 2032 - has zero equivalent activation event.</p>
+      <span class="cstat sg ch-stat">8/8 sessions fully booked - demand is proven</span>
     </div>
 
-    <!-- Card 3: Teenage Girls Walking Away -->
-    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
-      <div class="ccard-inner">
-        <div class="ccard ccard-front cn">
-          <div class="cowner on2">Hailey - Engagement & Partnerships</div>
-          <h3>💪 &nbsp;Teenage Girls Walking Away</h3>
-          <p>The industry still faces huge drop-out rates among teenage girls transitioning into senior sport. The pipeline leaks before they ever reach club level - and it's getting worse.</p>
-          <span class="cstat sn ch-stat">Sport & Rec Victoria: crisis-level dropout rates</span>
-        </div>
-        <div class="ccard ccard-back cn">
-          <div class="flip-back-label ln">💡 Blue Lane Co. Fix</div>
-          <h3>HerPaddle closes the dropout cliff</h3>
-          <p>Female-only coaching environments, 50 accredited coaches, zero competition pressure - a social-first model proven to retain teenage girls. Funded through CSR partnerships with female-aligned wellness brands. Target: +30% retention in 2 years.</p>
-        </div>
-      </div>
-      <span class="flip-hint">tap to flip ↩</span>
+    <div class="ccard gc cn tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="cowner on2">Hailey - Engagement & Partnerships</div>
+      <h3>💪 &nbsp;Teenage Girls Walking Away</h3>
+      <p>The industry still faces huge drop-out rates among teenage girls transitioning into senior sport. The pipeline leaks before they ever reach club level - and it's getting worse.</p>
+      <span class="cstat sn ch-stat">Sport & Rec Victoria: crisis-level dropout rates</span>
     </div>
 
-    <!-- Card 4: Digital Blind Spot -->
-    <div class="ccard-flip gc tilt ch-card" style="opacity:0;transform:translateY(24px);">
-      <div class="ccard-inner">
-        <div class="ccard ccard-front cp">
-          <div class="cowner op">Raymond - Marketing & Consumer</div>
-          <h3>📵 &nbsp;Digital Blind Spot</h3>
-          <p>Search "cinematic paddle reels" on YouTube or Instagram - nothing comes up. In today's society, this is the content we consume and breathe. Paddle Australia is invisible to the next generation.</p>
-          <span class="cstat sp">Zero cinematic paddle content online</span>
-        </div>
-        <div class="ccard ccard-back cp">
-          <div class="flip-back-label lp">💡 Blue Lane Co. Fix</div>
-          <h3>We own the content gap no one else sees</h3>
-          <p>Cinematic short-form reels - music-driven, emotion-first, real paddler stories. Raymond pitches a media company partnership to fund high-end production. TikTok & Instagram-first. Target: 500K organic views within 6 months.</p>
-        </div>
-      </div>
-      <span class="flip-hint">tap to flip ↩</span>
+    <div class="ccard gc cp tilt ch-card" style="opacity:0;transform:translateY(24px);">
+      <div class="cowner op">Raymond - Marketing & Consumer</div>
+      <h3>📵 &nbsp;Digital Blind Spot</h3>
+      <p>Search "cinematic paddle reels" on YouTube or Instagram - nothing comes up. In today's society, this is the content we consume and breathe. Paddle Australia is invisible to the next generation.</p>
+      <span class="cstat sp">Zero cinematic paddle content online</span>
     </div>
 
   </div>
@@ -655,15 +595,11 @@ function runChallengeAnims(){
 
 function resetChallengeAnims(){
   document.querySelectorAll('.ch-anim').forEach(el=>{el.style.opacity='0';});
-  document.querySelectorAll('.ch-card').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.classList.remove('flipped');});
+  document.querySelectorAll('.ch-card').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';});
   const sub=document.getElementById('ch-sub');
   if(sub)sub.textContent='';
 }
 
-/* ── CARD FLIP ── */
-document.querySelectorAll('.ccard-flip').forEach(card=>{
-  card.addEventListener('click',()=>card.classList.toggle('flipped'));
-});
 
 /* ── NAVIGATION ── */
 let cur=0;
